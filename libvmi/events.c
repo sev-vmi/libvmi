@@ -98,6 +98,10 @@ status_t events_init(vmi_instance_t vmi)
             break;
         case VMI_XEN:
             break;
+        case VMI_TCP:
+            break;
+        case VMI_TLS:
+            break;
         default:
             errprint("The selected hypervisor has no events support!\n");
             return VMI_FAILURE;
@@ -336,8 +340,16 @@ static status_t register_mem_event_on_gfn(vmi_instance_t vmi, vmi_event_t *event
             event->slat_id)) {
         g_hash_table_insert_compat(vmi->mem_events_on_gfn, GSIZE_TO_POINTER(event->mem_event.gfn), event);
 
-        if ( event->mem_event.gfn > (vmi->max_physical_address >> vmi->page_shift) )
-            vmi->max_physical_address = event->mem_event.gfn << vmi->page_shift;
+        if ( VMI_TLS == vmi->mode ) {
+            // Mask C-bit (index 51 might change)
+            addr_t masked_gfn = event->mem_event.gfn & ( ~(((uint64_t)0x1) << 51) >> vmi->page_shift) ;
+
+            if ( masked_gfn > (vmi->max_physical_address >> vmi->page_shift) )
+                vmi->max_physical_address = masked_gfn << vmi->page_shift;
+        } else {
+            if ( event->mem_event.gfn > (vmi->max_physical_address >> vmi->page_shift) )
+                vmi->max_physical_address = event->mem_event.gfn << vmi->page_shift;
+        }
 
         return VMI_SUCCESS;
     }
@@ -732,8 +744,16 @@ vmi_set_mem_event(
     }
 
     if ( VMI_SUCCESS == driver_set_mem_access(vmi, gfn, access, slat_id) ) {
-        if ( gfn > (vmi->max_physical_address >> vmi->page_shift) )
-            vmi->max_physical_address = gfn << vmi->page_shift;
+        if ( VMI_TLS == vmi->mode ) {
+            // Mask C-bit (index 51 might change)
+            addr_t masked_gfn = gfn & ( ~(((uint64_t)0x1) << 51) >> vmi->page_shift) ;
+
+            if ( masked_gfn > (vmi->max_physical_address >> vmi->page_shift) )
+                vmi->max_physical_address = masked_gfn << vmi->page_shift;
+        } else {
+            if ( gfn > (vmi->max_physical_address >> vmi->page_shift) )
+                vmi->max_physical_address = gfn << vmi->page_shift;
+        }
 
         return VMI_SUCCESS;
     }

@@ -114,9 +114,19 @@ static status_t get_vcpu_page_mode_x86(vmi_instance_t vmi, unsigned long vcpu, p
     dbprint(VMI_DEBUG_PTLOOKUP, "**sanity checking cr3 = 0x%.16"PRIx64"\n", cr3);
 
     /* testing to see CR3 value */
-    if (!driver_is_pv(vmi) && cr3 >= vmi->max_physical_address) {   // sanity check on CR3
+    if ( VMI_TLS == vmi->mode || VMI_TCP == vmi->mode ) {
+        // Mask C-bit (index 51 might change)
+        reg_t masked_cr3 = cr3 & ~(((uint64_t)0x1) << 51);
+
+        if (!driver_is_pv(vmi) && masked_cr3 >= vmi->max_physical_address) {   // sanity check on CR3
+        dbprint(VMI_DEBUG_PTLOOKUP, "** Note cr3 value [0x%"PRIx64"] exceeds max_physical_address [0x%"PRIx64"]\n",
+                masked_cr3, vmi->max_physical_address);
+        }
+    } else {
+        if (!driver_is_pv(vmi) && cr3 >= vmi->max_physical_address) {   // sanity check on CR3
         dbprint(VMI_DEBUG_PTLOOKUP, "** Note cr3 value [0x%"PRIx64"] exceeds max_physical_address [0x%"PRIx64"]\n",
                 cr3, vmi->max_physical_address);
+        }
     }
 
     if ( out_pm ) {

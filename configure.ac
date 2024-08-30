@@ -91,6 +91,20 @@ AC_ARG_ENABLE([file],
       [enable_file=yes])
 AM_CONDITIONAL([WITH_FILE], [test x"$enable_file" = xyes])
 
+AC_ARG_ENABLE([tcp],
+      [AS_HELP_STRING([--disable-tcp],
+         [Disable support for memory introspection with TCP only @<:@no@:>@])],
+      [enable_tcp=$enableval],
+      [enable_tcp=yes])
+AM_CONDITIONAL([WITH_TCP], [test x"$enable_tcp" = xyes])
+
+AC_ARG_ENABLE([tls],
+      [AS_HELP_STRING([--disable-tls],
+         [Disable support for memory introspection with TLS @<:@no@:>@])],
+      [enable_tls=$enableval],
+      [enable_tls=yes])
+AM_CONDITIONAL([WITH_TLS], [test x"$enable_tls" = xyes])
+
 AC_ARG_ENABLE([windows],
       [AS_HELP_STRING([--disable-windows],
          [Disable support for introspecting Windows (XP - 10) @<:@no@:>@])],
@@ -340,6 +354,16 @@ AC_CHECK_LIB(json-c, json_object_get_uint64, [AC_DEFINE([JSONC_UINT64_SUPPORT], 
     AC_DEFINE([ENABLE_BAREFLANK], [1], [Define to 1 to enable Bareflank support.])
 [fi]
 
+[if test "$enable_tcp" = "yes"]
+[then]
+    AC_DEFINE([ENABLE_TCP], [1], [Define to 1 to enable TCP only support.])
+[fi]
+
+[if test "$enable_tls" = "yes"]
+[then]
+    AC_DEFINE([ENABLE_TLS], [1], [Define to 1 to enable TLS support.])
+[fi]
+
 [if test "$enable_windows" = "yes"]
 [then]
     AC_DEFINE([ENABLE_WINDOWS], [1], [Define to 1 to Windows support.])
@@ -468,6 +492,8 @@ KVM Support             | --enable-kvm=$enable_kvm
 Legacy KVM Driver       | --enable-kvm-legacy=$enable_kvm_legacy
 File Support            | --enable-file=$enable_file
 Bareflank               | --enable-bareflank=$enable_bareflank
+TCP only Support        | --enable-tcp=$enable_tcp
+TLS Support             | --enable-tls=$enable_tls
 ------------------------|---------------------------
 
 OS                      | Option

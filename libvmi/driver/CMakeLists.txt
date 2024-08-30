@@ -15,3 +15,7 @@ endif ()
 if (ENABLE_XEN)
     add_subdirectory(xen)
 endif ()
+
+if (ENABLE_TCP OR ENABLE_TLS)
+    add_subdirectory(tls)
+endif ()

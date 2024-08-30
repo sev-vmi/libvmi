@@ -1020,6 +1020,11 @@ windows_init(vmi_instance_t vmi, GHashTable *config)
         return VMI_FAILURE;
     }
 
+    if (vmi->mode == VMI_TLS || VMI_TCP == vmi->mode) {
+        errprint("VMI_ERROR: Windows code not yet adapted to handle SEV-SNP C-bits correctly on checks against max_physical_address\n");
+        return VMI_FAILURE;
+    }
+
     if (vmi->os_data != NULL) {
         errprint("VMI_ERROR: os data already initialized, resetting\n");
         bzero(vmi->os_data, sizeof(struct windows_instance));

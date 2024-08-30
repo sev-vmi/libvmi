@@ -10,6 +10,9 @@ target_link_libraries(descriptor-event-example vmi_shared)
 add_executable(mem-event-example mem-event-example.c)
 target_link_libraries(mem-event-example vmi_shared)
 
+add_executable(syssec-mem-event-example syssec-mem-event-example.c)
+target_link_libraries(syssec-mem-event-example vmi_shared)
+
 add_executable(map-symbol map-symbol.c)
 target_link_libraries(map-symbol vmi_shared)
 

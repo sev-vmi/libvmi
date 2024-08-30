@@ -447,6 +447,17 @@ set_id_and_name(
         return VMI_FAILURE;
     }
 
+    if(VMI_TLS == vmi->mode || VMI_TCP == vmi->mode) {
+        if(name) {
+            driver_set_name(vmi, name);
+            driver_get_name(vmi, &vmi->image_type); //TODO: required?
+            goto done;
+        }
+
+        errprint("Must specify name for TLS mode.\n");
+        return VMI_FAILURE;
+    }
+
     /* resolve and set id from name */
     if (name) {
         if (VMI_INVALID_DOMID != (id = driver_get_id_from_name(vmi, name)) ) {
@@ -595,6 +606,15 @@ static inline status_t driver_sanity_check(vmi_mode_t mode)
             break;
         case VMI_BAREFLANK:
 #ifndef ENABLE_BAREFLANK
+            return VMI_FAILURE;
+#endif
+        case VMI_TLS:
+#ifndef ENABLE_TLS
+            return VMI_FAILURE;
+#endif
+            break;
+        case VMI_TCP:
+#ifndef ENABLE_TCP
             return VMI_FAILURE;
 #endif
             break;

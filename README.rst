@@ -31,16 +31,6 @@ want more details about installation, or programming with LibVMI, then see
 the documentation included in the doc/ subdirectory of LibVMI, or view the
 documentation online at https://libvmi.com.
 
-.. image:: https://badges.gitter.im/Join%20Chat.svg
-   :alt: Join the chat at https://gitter.im/libvmi/Lobby
-   :target: https://gitter.im/libvmi/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
-
-.. image:: https://github.com/libvmi/libvmi/actions/workflows/compile.yml/badge.svg
-    :target: https://github.com/libvmi/libvmi/actions/workflows/compile.yml
-
-.. image:: https://scan.coverity.com/projects/14159/badge.svg
-    :target: https://scan.coverity.com/projects/libvmi-libvmi
-
 Dependencies
 ------------
 The following libraries are used in building this code:
@@ -58,6 +48,10 @@ The following libraries are used in building this code:
 - ``libvirt`` (``>= 0.8.7``)
 
 - ``libjson-c``
+
+- ``protobuf-c``
+
+- ``openssl`` (``1.1.1v``)
 
 Installing the dependencies on Ubuntu::
 
@@ -88,12 +82,31 @@ available.
 
 Otherwise, look at ``CMakeLists.txt`` ``option()`` commands.
 
+If you want to use TCP or TLS, you can only use one of them at the same time.
+
+To install only TLS use 
+
+.. code::
+
+   mkdir build
+   cd build
+   cmake .. -DENABLE_TLS=ON -DENABLE_TCP=OFF -DENABLE_KVM=OFF -DENABLE_XEN=OFF -DENABLE_BAREFLANK=OFF -DENABLE_FILE=OFF
+   make 
+   sudo make install
+   
+For TCP-only it is similar.
+
 Installation and Configuration
 ------------------------------
 For complete details on installation and configuration, please see the
 related online documentation:
 
 http://libvmi.com/docs/gcode-install.html
+
+TCP/TLS
+~~~
+
+For the VM Name in the configuarion file use the IP address without port.
 
 Xen support
 ~~~~~~~~~~~

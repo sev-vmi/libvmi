@@ -31,6 +31,12 @@
 /* Define to enable KVM legacy driver support */
 #cmakedefine ENABLE_KVM_LEGACY
 
+/* Define to enable TCP only support. */
+#cmakedefine ENABLE_TCP
+
+/* Define to enable TLS support. */
+#cmakedefine ENABLE_TLS
+
 /* Define to Linux support. */
 #cmakedefine ENABLE_LINUX
 

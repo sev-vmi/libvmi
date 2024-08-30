@@ -53,6 +53,8 @@ set(CMAKE_SHARED_LINKER_FLAGS_RELEASE "-s")
 #-----------------------------------------------------------------------------
 option(ENABLE_XEN "Build Xen driver" ON)
 option(ENABLE_FILE "Build file driver" ON)
+option(ENABLE_TCP "Build TLS driver but with TCP" ON)
+option(ENABLE_TLS "Build TLS driver" ON)
 
 option(ENABLE_WINDOWS "Build Windows introspection" ON)
 option(ENABLE_LINUX "Build Linux introspection" ON)
@@ -163,6 +165,8 @@ add_feature_info(ENABLE_XEN ENABLE_XEN "Build Xen driver")
 add_feature_info(ENABLE_KVM ENABLE_KVM "Build KVM driver")
 add_feature_info(ENABLE_BAREFLANK ENABLE_BAREFLANK "Build Bareflank driver")
 add_feature_info(ENABLE_FILE ENABLE_FILE "Build file driver")
+add_feature_info(ENABLE_TCP ENABLE_TCP "Build TLS driver but with TCP only")
+add_feature_info(ENABLE_TLS ENABLE_TLS "Build TLS driver")
 
 add_feature_info(ENABLE_WINDOWS ENABLE_WINDOWS "Enable Windows introspection")
 add_feature_info(ENABLE_LINUX ENABLE_LINUX "Enable Linux introspection")

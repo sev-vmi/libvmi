@@ -117,8 +117,16 @@ static memory_cache_entry_t create_new_entry (vmi_instance_t vmi, addr_t paddr,
 
     if (vmi->vm_type == HVM || vmi->vm_type == NORMAL) {
         if ( !vmi->memmap ) {
-            if ( paddr + length > vmi->max_physical_address ) {
-                goto err_exit;
+            // TODO: This check is wrong if SEV C-bits are set and LibVMI is unaware of them.
+            if ( VMI_TLS == vmi->mode || VMI_TCP == vmi->mode) {
+                // C-bit index 51 might change
+                if ( ((paddr & ~(((uint64_t)0x1) << 51)) + length) > vmi->max_physical_address ) {
+                    goto err_exit;
+                }
+            } else {
+                if ( paddr + length > vmi->max_physical_address ) {
+                    goto err_exit;
+                }
             }
         } else {
             // If we have a memory map we can check that the access is within a valid range

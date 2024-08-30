@@ -114,6 +114,20 @@ drivers     += libvmi/driver/bareflank/bareflank.h \
                libvmi/driver/bareflank/hypercall.S
 endif
 
+if WITH_TCP || WITH_TLS
+    drivers     += libvmi/driver/tls/tls.h \
+                   libvmi/driver/tls/tls_private.h \
+                   libvmi/driver/tls/tls_events.h \
+                   libvmi/driver/tls/messages.pb-c.h \
+                   libvmi/driver/tls/handle_pb_prefix.h \
+                   libvmi/driver/tls/handle_pb_msg.h \
+                   libvmi/driver/tls/tls.c \
+                   libvmi/driver/tls/tls_events.c \
+                   libvmi/driver/tls/messages.pb-c.c \
+                   libvmi/driver/tls/handle_pb_prefi.c
+                   libvmi/driver/tls/handle_pb_msg.c
+endif
+
 os =
 if WINDOWS
 h_public    += libvmi/peparse.h

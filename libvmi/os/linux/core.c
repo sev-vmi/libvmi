@@ -77,10 +77,21 @@ static bool is_x86_64_pd (vmi_instance_t vmi, addr_t pa)
 
         addr_t gfn = pde >> 12;
 
-        if (0 == gfn || gfn > maxframe) {
-            /* ... this is not a valid GFN, so fail the whole page.  */
-            rc = false;
-            goto exit;
+        if ( VMI_TLS == vmi->mode || VMI_TCP == vmi->mode ) {
+            // Mask C-bit (index 51 might change)
+            addr_t masked_gfn = gfn & ( ~(((uint64_t)0x1) << 51) >> vmi->page_shift) ;
+
+            if (0 == masked_gfn || masked_gfn > maxframe) {
+                /* ... this is not a valid GFN, so fail the whole page.  */
+                rc = false;
+                goto exit;
+            }
+        } else {
+            if (0 == gfn || gfn > maxframe) {
+                /* ... this is not a valid GFN, so fail the whole page.  */
+                rc = false;
+                goto exit;
+            }
         }
 
         /* ... the page has a valid-looking PDE, so for now, it passes. */
@@ -104,6 +115,7 @@ static GSList * find_page_directories (vmi_instance_t vmi)
     if (VMI_PM_IA32E != vmi_get_page_mode (vmi, 0))
         goto exit;
 
+    // Note: is_x86_64_pd() masks C-bits
     for (candidate = 0x1000; candidate < vmi_get_max_physical_address (vmi); candidate += VMI_PS_4KB) {
         if (is_x86_64_pd (vmi, candidate)) {
             /* hold addr in dynamic storage: 32-bit libvmi could be analyzing 64 bit OS */
@@ -504,6 +516,8 @@ static status_t brute_force_find_kern_mem (vmi_instance_t vmi)
     /* Case for non-x64 systems. Expect poor performance. */
     warnprint("Looking for kernel PGD and KASLR with slowest available technique\n");
 
+    // Note: currently SEV agent handles page reads always as C-bit := 0,
+    //  but if that changes in the future, might have to adapt this code
     for (vmi->kpgd = 0; vmi->kpgd < vmi_get_max_physical_address (vmi); vmi->kpgd += VMI_PS_4KB) {
         if (VMI_SUCCESS == verify_linux_paging(vmi)) {
             rc = VMI_SUCCESS;
